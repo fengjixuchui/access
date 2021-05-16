@@ -35,7 +35,7 @@ NTSTATUS NTAPI NtSuspendProcessHook(HANDLE processHandle) {
 NTSTATUS(NTAPI *NtResumeProcess)(HANDLE processHandle);
 NTSTATUS NTAPI NtResumeProcessHook(HANDLE processHandle) {
 	if (!IsValidHandle(processHandle)) {
-		return NtSuspendProcess(processHandle);
+		return NtResumeProcess(processHandle);
 	}
 
 	NTRESUMEPROCESS_ARGS args;
@@ -177,7 +177,7 @@ NTSTATUS NTAPI NtLockVirtualMemoryHook(HANDLE processHandle, PVOID *baseAddress,
 NTSTATUS(NTAPI *NtUnlockVirtualMemory)(HANDLE processHandle, PVOID *baseAddress, PSIZE_T regionSize, ULONG lockOption);
 NTSTATUS NTAPI NtUnlockVirtualMemoryHook(HANDLE processHandle, PVOID *baseAddress, PSIZE_T regionSize, ULONG lockOption) {
 	if (processHandle == GetCurrentProcess() || !IsValidHandle(processHandle)) {
-		return NtLockVirtualMemory(processHandle, baseAddress, regionSize, lockOption);
+		return NtUnlockVirtualMemory(processHandle, baseAddress, regionSize, lockOption);
 	}
 
 	NTUNLOCKVIRTUALMEMORY_ARGS args;
@@ -332,7 +332,7 @@ NTSTATUS NTAPI NtResumeThreadHook(HANDLE threadHandle, PULONG suspendCount) {
 NTSTATUS(NTAPI *NtSuspendThread)(HANDLE threadHandle, PULONG previousSuspendCount);
 NTSTATUS NTAPI NtSuspendThreadHook(HANDLE threadHandle, PULONG previousSuspendCount) {
 	if (threadHandle == GetCurrentThread() || !IsValidHandle(threadHandle)) {
-		return NtResumeThread(threadHandle, previousSuspendCount);
+		return NtSuspendThread(threadHandle, previousSuspendCount);
 	}
 
 	NTSUSPENDTHREAD_ARGS args;
